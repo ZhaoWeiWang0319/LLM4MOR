@@ -1,0 +1,5 @@
+Repair the $stage errors below without changing original data or dropping necessary constraints.
+Preserve the validity requirements and data interface of the original task.
+Output the complete final model in exactly one ```model code block and, if the original task requires it, the complete Python mapping script in exactly one ```mapping code block after the model; both must match. Use these role labels regardless of the model language. Do not use language names as code-block labels.
+Do not output partial patches.
+$details

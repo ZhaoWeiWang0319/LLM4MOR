@@ -1,0 +1,28 @@
+[MiniZinc mapping values]
+Variables may be added, replaced, or eliminated, but solutions must be mapped back to the independent top-level decision variables of the original model.
+The optional indices field maps each original array variable name to its index sets, one per dimension; it is absent if no array index context is needed.
+Value encoding: int/bool/float/string use native JSON types; enums use {"enum":"enum_member_name"};
+sets use {"set":[element,...]} or {"range":[lower_bound,upper_bound]}; absent values use null;
+arrays use {"array":[elements_flattened_in_MiniZinc_order], "index_sets":[index_set_for_each_dimension]}.
+Index sets also use the set encoding above. Preserve non-1-based starts, enum indices, and the dimensions of empty arrays.
+Output: {"variables":{original_model_independent_variable_name:value_encoded_in_the_same_format}}.
+Do not output parameters or auxiliary variables specific to the reformulated model. Variables bound by = in the original model or by the original .dzn are computed from their original definitions and may be omitted.
+All other original independent variables must be provided, with no omissions or default zero values. If there are no original independent variables, output empty variables.
+If variables are unchanged, copy only the required original variables; do not copy newly added auxiliary variables to the output.
+Use parameters and indices during reconstruction; do not hard-code the data or dimensions of an external instance.
+[Actual Input and Solver Output Contract]
+The solver uses --output-mode dzn. The framework ignores custom output text from the model and does not merge its fields into variables.
+variables contains only variables actually emitted in the default DZN solution, not a dictionary of all top-level declarations.
+Do not assume that newly added parameters, output_only arrays, views/aliases defined with =, or fixed arrays are always exported.
+Likewise, reformulating a constant or parameter as a var int alias does not guarantee that it appears in the solution.
+parameters comes only from the current instance of the original model. It excludes parameters added or renamed in the reformulated model and is not automatically merged with variables.
+indices describes only the index domains of original model variables; it provides neither fixed data nor variable values from the reformulated model.
+When designing the model and map, verify the actual source of every field read. Do not rely on mapping metadata present only in custom output.
+Variable values are read from the default DZN output. Obtain fixed data according to these rules:
+1. Self-contained models: fixed data that remains unchanged in the original input and is required for reconstruction may be embedded directly in map.py or derived from the provided original parameters.
+2. Models with external .dzn files: instance-specific data must be read from parameters under the original parameter names and derived from it.
+   Do not hard-code values from any particular .dzn file or assume that newly named auxiliary parameters in the reformulated model can be read as original parameters.
+3. If sorting, grouping, numbering, or other reconstruction data can be computed from the original parameters, map must recompute it using the same rules rather than rely on unexported auxiliary arrays.
+If a required field is missing, report the field name and required source. Never use get(name, 0), empty arrays, guessed values, or swallowed exceptions to fake a successful mapping.
+Before submitting, check that every input field has one of the sources above, every original independent variable is restored, and array index domains and types are correct.
+When generation-stage checking is enabled, the framework checks syntax and runs a structured zero-input smoke test only when applicable. Actual solutions can be mapped and injected into the original model by verify_solution.py.

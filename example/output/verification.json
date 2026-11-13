@@ -1,0 +1,23 @@
+{
+  "model_id": "example",
+  "instance_id": "example",
+  "language": "ampl",
+  "status": "passed",
+  "checks": {
+    "mapping": {
+      "status": "passed"
+    },
+    "feasibility": {
+      "status": "passed"
+    },
+    "objective": {
+      "status": "passed"
+    }
+  },
+  "solution_objective": 6.0,
+  "mapped_objective": 6.0,
+  "objective_relative_difference": 0.0,
+  "max_violation": 0,
+  "feasibility_tolerance": 1e-06,
+  "seconds": 0.118
+}

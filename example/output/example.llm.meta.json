@@ -1,0 +1,26 @@
+{
+  "model_id": "example",
+  "source_model": "example/example.mod",
+  "instance_id": "example",
+  "language": "ampl",
+  "checks": {
+    "original": {
+      "status": "passed"
+    },
+    "model": {
+      "status": "passed"
+    },
+    "mapping": {
+      "status": "syntax_only",
+      "message": "Conditional reconstruction preconditions are unconfirmed for zero input"
+    }
+  },
+  "repairs": {
+    "model": 0,
+    "mapping": 1
+  },
+  "mapping_required": true,
+  "status": "success",
+  "stage": "complete",
+  "seconds": 31.29
+}

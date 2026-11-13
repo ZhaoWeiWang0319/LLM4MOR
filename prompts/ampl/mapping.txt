@@ -1,0 +1,6 @@
+[AMPL mapping values]
+  variables uses AMPL subscript notation, such as {"x[1,3]": 0.5}. Values must be finite numbers; boolean values are not AMPL numeric assignments.
+  parameters is a flat dictionary using original AMPL names (n or cost[1,2]); symbolic subscripts use double quotes. The optional sets field contains supported original unindexed one-dimensional sets as lists. Indexed and multidimensional sets may be listed in context_omissions.
+  Output only independent decision variables from the original model. Do not output defined variables declared with = (var w = ...;), params, or sets; they are evaluated automatically from their definitions, and assigning them causes errors.
+  If reformulation did not change the variable set, the script may simply copy variables unchanged (the script is still required).
+  Reconstruct eliminated variables and pruned indices according to the reformulation. Assign zero only when that value is justified by the original model and the reformulation, so that the original model's objective and constraints can be fully evaluated.

@@ -1,0 +1,8 @@
+[External data requirements]
+External instance data are not provided in this request. The reformulation must remain valid for all data satisfying the original model's input requirements when a data file is later supplied to independent verification.
+(1) Output one model compatible with the original external data interface. Keep external data external; the caller supplies a data file when needed. Do not modify data files or hard-code a particular external instance into the model or mapping script.
+(2) Preserve external parameter names, types, actual index domains, meanings, and binding methods. Do not assume indices start at 1. Preserve fixed data already present in the main model.
+(3) Do not add required parameters or data files that the user must provide. New auxiliary parameters and reconstruction data must be derived from existing inputs and model definitions.
+(4) Preserve the original default-value and external binding behavior. Do not replace data-supplied values with model-side assignments. Language-specific rules for externally bound symbols are stated below.
+(5) If a mapping script is requested, it must satisfy the original model's data requirements using the instance context provided under its mapping contract.
+(6) When validating a parameterized reformulation without external data, generate a temporary all-zero data assignment compatible with the declared interface and use it to check that all parameters, arrays, index sets, derived dimensions, and reconstruction rules instantiate consistently. Treat this synthetic data only as a static validation tool; do not include it in the model or mapping output, and do not infer that zero is semantically feasible.

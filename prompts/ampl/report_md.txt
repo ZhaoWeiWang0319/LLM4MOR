@@ -1,0 +1,5 @@
+Reformulation is complete. Finally, write a brief English report for the supplied model in Markdown format, intended for researchers unfamiliar with the instance. Include: (1) the problem's real-world background and meaning, inferred from the model structure; (2) the original model's variable, constraint, and objective structure; and (3) the changes you just made and why, identifying the preprocessing or reformulation techniques you used. Output the Markdown body directly, without wrapping it in a code block.
+
+Use any saved reformulation explanation already provided in the conversation.
+
+Do not assume that readers already know the model being reformulated. For every reduction, clearly explain why it is valid: state which constraints and variables of the original model lead to the result and how they lead to it, or identify the literature from which the result follows.

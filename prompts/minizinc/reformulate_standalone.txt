@@ -1,0 +1,16 @@
+[Filename] $filename
+$common_requirements
+$instance_requirements
+[MiniZinc requirements]
+(1) Output a complete, directly solvable MiniZinc model containing a valid solve item.
+(2) Do not reference external .dzn files. You may include standard libraries bundled with MiniZinc (for example, globals.mzn).
+(3) Array subscripts must be in bounds, and integer indices must be contiguous. Assigned index sets and element counts must match their declarations. Preserve non-1-based index domains where present.
+(4) Ensure the model can be compiled by the specified MiniZinc backend. Native checking compiles with -c and does not run the optimization solver. Compilation errors are returned for correction when checking is enabled.
+(5) Never introduce circular definitions. Every introduced variable or derived array must depend only on previously declared parameters, data, or decision variables, and the dependency graph must be acyclic.
+(6) Derive every introduced array's index set from the original declaration or data dimensions, using index_set, index_set_1of2/index_set_2of2, index_set_1of3/index_set_2of3/index_set_3of3, or length where appropriate. Do not infer bounds from the displayed length of a literal or comprehension; assigned arrays must exactly match their declared index sets.
+$mapping
+[MiniZinc compilation backend] $solver
+[Modeling file contents]
+$source
+$interface_requirements
+$context

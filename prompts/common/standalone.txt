@@ -1,0 +1,2 @@
+[Self-contained instance requirements]
+The reformulated model and its instance data must be self-contained and directly usable by the language-specific toolchain. Keep fixed data already present in the main model unchanged; auxiliary data may be derived from the original inputs. Do not require external data files or additional data supplied by the user.

@@ -1,0 +1,12 @@
+[Filename] $filename
+$common_requirements
+$instance_requirements
+[AMPL requirements]
+(1) Write only model declarations (set/param/var/s.t./minimize/maximize, check statements, and data sections). Do not include command statements such as solve, option, or display; an external script drives solving.
+(2) Do not use AMPL reserved words (such as OUT, IN, or exists) as custom identifiers.
+(3) Ensure AMPL can load and expand the model with its original instance data. Native checking loads and expands the model without invoking an optimization solver.
+$mapping
+[Modeling file contents]
+$source
+$interface_requirements
+$context

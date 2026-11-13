@@ -1,0 +1,13 @@
+[Filename] $filename
+$common_requirements
+$instance_requirements
+[AMPL requirements]
+(1) Write only model declarations (set/param/var/s.t./minimize/maximize, check statements, and data sections). Do not include command statements such as solve, option, or display; an external script drives solving.
+(2) Do not use AMPL reserved words (such as OUT, IN, or exists) as custom identifiers.
+(3) Preserve compatibility with the original .dat interface. Generation performs syntax-only checks when external data is required; independent verification loads and expands the model with one supplied data file without invoking an optimization solver.
+(4) Preserve the declarations and binding interface used by external .dat files. Preserve AMPL parameter defaults, including the ability of external data to override defaults; do not override data-supplied values within the model.
+$mapping
+[Modeling file contents]
+$source
+$interface_requirements
+$context

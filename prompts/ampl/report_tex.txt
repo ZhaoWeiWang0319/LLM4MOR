@@ -1,0 +1,1 @@
+Convert the report you just wrote into a standalone LaTeX document (\documentclass{article}, loading booktabs/geometry/amsmath as needed). Use $...$ or \[ \] for mathematical formulas. Output the complete document in one ```latex code block.

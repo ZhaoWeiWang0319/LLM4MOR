@@ -1,0 +1,1 @@
+python3 ../llm_analyze.py example.mod --output-dir output

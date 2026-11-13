@@ -1,0 +1,15 @@
+[Solution-mapping script]
+When requested, output the complete Python script in exactly one ```mapping code block after the ```model block. The mapping label identifies the artifact role; the script itself must be Python.
+Usage: python3 map.py input.json output.json.
+Use only the Python standard library. Do not access the network or read model or data files directly.
+The shared input fields are:
+{"instance_id": "instance_name", "variables": {}, "objective": null, "parameters": {}}.
+instance_id identifies the current original instance.
+variables and objective describe the same reformulated-model solution. objective is a finite number, or null when no solution objective is available. variables uses the language-specific value encoding below.
+parameters contains only parameters from the current original model instance. It does not contain parameters introduced or renamed by reformulation and is not merged with variables.
+Language-specific context may add sets or indices. context_omissions, when present, lists original context entities that could not be exported completely. Optional context fields may be absent when empty. Never invent missing values or assume an omitted entity is empty.
+Output exactly {"variables": {original_variable_name: value}}, restoring the original model's independent decision variables using the language-specific value encoding. Do not output status, objective, parameters, or other metadata.
+Every eliminated original independent variable must have a deterministic, executable reconstruction rule in the mapping script. The rule must be valid for the original model's data requirements and use only the reformulated solution values and available original context. If no such rule exists, retain the variable in the reformulated model or explicitly report that a valid mapping cannot be constructed; never silently omit the variable or invent a value.
+Reconstruct eliminated variables and indices from the reformulation and available original context. Do not hard-code external instance data or dimensions. If a required field is missing, report its name; do not substitute zero, empty arrays, or guessed values.
+All JSON numbers must be finite. NaN, Infinity, and duplicate object keys are invalid.
+Generation-stage checks use artificial numeric or boolean inputs only when applicable. They use this same input protocol, but do not establish feasibility or equivalence. Independent verification uses actual solutions.

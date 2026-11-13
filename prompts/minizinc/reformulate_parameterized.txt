@@ -1,0 +1,17 @@
+[Filename] $filename
+$common_requirements
+$instance_requirements
+[MiniZinc requirements]
+(1) Output a complete MiniZinc modeling file containing a valid solve item. The reformulated model must remain compatible with the original .dzn data interface.
+(2) You may include standard libraries bundled with MiniZinc (for example, globals.mzn). External .dzn data are supplied only during solving and independent verification.
+(3) Array subscripts must be in bounds, and integer indices must be contiguous. Assigned index sets and element counts must match their declarations. Preserve non-1-based index domains where present.
+(4) Ensure the model can be compiled by the specified MiniZinc backend when its required data is available. Generation performs syntax-only checks when external data is required; independent verification compiles with one supplied data file and does not run the optimization solver.
+(5) External .dzn files may reference derived sets, constants, or decision variables, and may assign values to decision variables. Preserve the compatible meanings and binding methods of these external symbols, and do not reassign symbols already bound by data within the model. Internal variables and constraints may be restructured, and views or channeling constraints may connect new internal representations.
+(6) Never introduce circular definitions. Every introduced variable or derived array must depend only on previously declared parameters, data, or decision variables, and the dependency graph must be acyclic.
+(7) Derive every introduced array's index set from the original declaration or external data dimensions, using index_set, index_set_1of2/index_set_2of2, index_set_1of3/index_set_2of3/index_set_3of3, or length where appropriate. Do not infer bounds from the displayed length of a literal or comprehension; assigned arrays must exactly match their declared index sets for every valid external data instance.
+$mapping
+[MiniZinc compilation backend] $solver
+[Modeling file contents]
+$source
+$interface_requirements
+$context

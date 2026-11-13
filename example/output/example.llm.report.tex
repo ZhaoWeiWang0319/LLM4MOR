@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\title{Report: Choose-at-Most-One with a Fixed Activation Cost}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Real-world background}
+
+The model describes a stylized \emph{single-choice investment / project-selection problem with a shared setup cost}. An organization has a set of nine candidate options (indexed \texttt{A} through \texttt{I}), each of which would yield a known nonnegative benefit if adopted. Adopting any option requires incurring a one-time activation (fixed) cost that is paid once, regardless of which option is selected---for example, renting a facility, hiring a contractor, or launching a program that is a prerequisite for whichever alternative is ultimately pursued. Because the options are mutually exclusive (the organization can commit to at most one), the decision reduces to: \emph{is any option worth pursuing, and if so, which one maximizes benefit minus the fixed cost?}
+
+Because the benefit data are \texttt{A 9, B 12, C 11, D 5, E 8, F 4, G 10, H 7, I 6} and the activation cost is \texttt{6}, option \texttt{B} is the best single choice, yielding net benefit \(12-6=6\).
+
+\section{Original model structure}
+
+\subsection*{Decision variables (10 independent variables)}
+\begin{itemize}
+  \item \texttt{x \{OPTIONS\}} --- binary indicators, one per option (\(\lvert\mathrm{OPTIONS}\rvert=9\)), equal to \(1\) if the option is chosen.
+  \item \texttt{y} --- a single continuous variable, unrestricted in sign, representing the level of activation actually incurred.
+\end{itemize}
+
+\subsection*{Constraints (10 constraints)}
+\begin{itemize}
+  \item \texttt{choose\_at\_most\_one}:
+  \[
+    \sum_{i\in\mathrm{OPTIONS}} \mathtt{x}[i] \le 1.
+  \]
+  This is the single coupling constraint across the nine binaries; together with \texttt{x binary} it enforces that at most one option is selected.
+
+  \item \texttt{activate\_if\_chosen \{i in OPTIONS\}}:
+  \[
+    \mathtt{y} \ge \mathtt{x}[i] \qquad \forall i\in\mathrm{OPTIONS}.
+  \]
+  These are the fixed-charge linking constraints: if any option is chosen, \texttt{y} must be at least \(1\), i.e., the activation cost must be paid for.
+\end{itemize}
+
+\subsection*{Objective (maximization)}
+\[
+  \text{maximize } \mathtt{net\_benefit}:
+  \sum_{i\in\mathrm{OPTIONS}} \mathtt{benefit}[i]\,\mathtt{x}[i]
+  - \mathtt{activation\_cost}\,\mathtt{y}.
+\]
+The objective is the total benefit of the chosen option minus the activation cost times the activation level. Since \texttt{y} appears with the strictly negative coefficient \(-\mathtt{activation\_cost}\) (\(\mathtt{activation\_cost}=6>0\)) and has no upper bound, the optimizer always drives \texttt{y} to its smallest feasible value. Consequently, in the original formulation \texttt{y} is pinned to \(\max_i \mathtt{x}[i]\) at any optimal solution, and the objective is exactly ``benefit of the single chosen option, minus the fixed cost if and only if something is chosen.'' No constraint forces \texttt{y} upward when nothing is chosen, which correctly avoids charging the fixed cost for an empty selection.
+
+\section{Reformulation and why it is valid}
+
+\textbf{Technique used: constraint aggregation} (a problem-specific reduction exploiting integrality and a cardinality bound).
+
+The nine linking constraints \(\mathtt{y} \ge \mathtt{x}[i]\) were replaced by the \textbf{single} aggregated constraint
+\begin{verbatim}
+subject to activation_link:
+    y >= sum {i in OPTIONS} x[i];
+\end{verbatim}
+This reduces the constraint count from \(10\) to \(2\). No variables, data, or objective terms were changed, and the variable set is identical to the original. The replacement is an \emph{exact} equivalence of the feasible regions, not a relaxation:
+
+\begin{itemize}
+  \item \textbf{(Original \(\Rightarrow\) aggregated).}
+  Suppose \(\mathtt{y} \ge \mathtt{x}[i]\) holds for every \(i\). All \(\mathtt{x}[i]\) are binary and \texttt{choose\_at\_most\_one} states \(\sum_i \mathtt{x}[i] \le 1\), so at most one of them equals \(1\). Hence
+  \[
+    \sum_i \mathtt{x}[i] = \max_i \mathtt{x}[i],
+  \]
+  and
+  \[
+    \mathtt{y} \ge \max_i \mathtt{x}[i] = \sum_i \mathtt{x}[i].
+  \]
+  The aggregated constraint is satisfied.
+
+  \item \textbf{(Aggregated \(\Rightarrow\) original).}
+  Suppose \(\mathtt{y} \ge \sum_i \mathtt{x}[i]\). Since every \(\mathtt{x}[i]\) is binary and therefore nonnegative,
+  \[
+    \mathtt{x}[i] \le \sum_j \mathtt{x}[j]
+  \]
+  for each \(i\). Chaining the inequalities gives
+  \[
+    \mathtt{y} \ge \sum_j \mathtt{x}[j] \ge \mathtt{x}[i]
+  \]
+  for every \(i\), so each of the nine original linking constraints is satisfied.
+\end{itemize}
+
+Because the two feasible sets coincide for every value of the binaries (including the all-zero selection, where the aggregate reduces to \(\mathtt{y} \ge 0\) exactly as the nine originals do), the optimum value and the objective direction are unchanged, and every optimal solution of one model has a counterpart in the other with the same \(\mathtt{x}\) and the same optimal \(\mathtt{y}\). The argument relies only on two structural facts visible in the model source: \texttt{x} is declared \texttt{binary} and \texttt{choose\_at\_most\_one} bounds \(\sum_{i\in\mathrm{OPTIONS}} \mathtt{x}[i]\) by \(1\). If either the binomial domain or the at-most-one row were removed, the aggregation would no longer be valid---this is precisely why the cardinality constraint must be retained, and it has been.
+
+\textbf{Secondary effect and why it helps.}
+Replacing nine near-parallel rows by one row removes substantial redundancy from the LP relaxation: the nine rows were heavily degenerate with respect to one another (all bounded the same single continuous variable \texttt{y} from below by individual binaries). The aggregated row is a single, nonredundant cut separating ``any selection'' from ``no selection'' and inherits the cardinality structure directly, which typically yields a tighter, better-conditioned relaxation and requires less branching on \texttt{y}.
+
+\textbf{What was deliberately not changed.}
+The variable set is untouched, so \texttt{x[...]} and \texttt{y} remain the independent decision variables of the reported solution, and the solution-mapping script is a pass-through that copies exactly the original \texttt{x[...]} and \texttt{y} entries and rejects non-finite or non-numeric values. Embedding the data section verbatim keeps the model self-contained and the instance data unchanged. One could go further---for example, substituting
+\[
+  \mathtt{y} = \sum_{i\in\mathrm{OPTIONS}} \mathtt{x}[i]
+\]
+(or fixing \texttt{y} to the maximum selected option) as a preprocessing step, since optimality forces \texttt{y} to that value; this would eliminate \texttt{y} entirely and collapse the problem to picking the single best benefit. That step is \emph{not} applied here, because it changes the reported variable set and would require a reconstruction rule for \texttt{y}; keeping \texttt{y} explicit preserves exact correspondence with the original model's interface at no cost in solution difficulty.
+
+\end{document}
